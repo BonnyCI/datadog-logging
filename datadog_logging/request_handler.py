@@ -16,8 +16,8 @@ import platform
 
 import requests
 
-from datadog_logging import version as _version
 from datadog_logging import base
+from datadog_logging import version as _version
 
 
 __all__ = (

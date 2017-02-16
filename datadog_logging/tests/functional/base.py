@@ -11,14 +11,12 @@
 # under the License.
 
 import os
-import logging
 import uuid
 
 import betamax
 import fixtures
 import requests
 
-import datadog_logging
 from datadog_logging.tests import base
 from datadog_logging.tests.functional import serializer
 

@@ -33,8 +33,6 @@ class SimpleGoodLogs(base.RequestTestCase):
 
         self.assertApiKey()
 
-        request_json = self.requests_mock.last_request.json()
-
         self.assertElement('text', 'This should be passed')
         self.assertElement('title', 'This should be passed')
         self.assertElement('alert_type', 'warning')

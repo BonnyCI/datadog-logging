@@ -12,8 +12,10 @@
 
 from datadog_logging import version as _version
 
-from datadog_logging.request_handler import *
-from datadog_logging.statsd_handler import *
+from datadog_logging.request_handler import *  # noqa
+from datadog_logging.statsd_handler import *  # noqa
+
+__version__ = _version.version_string
 
 
 __all__ = [
