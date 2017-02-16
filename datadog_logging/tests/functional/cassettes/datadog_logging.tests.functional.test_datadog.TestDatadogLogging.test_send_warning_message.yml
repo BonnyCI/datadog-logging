@@ -1,0 +1,34 @@
+http_interactions:
+- recorded_at: '2017-02-16T05:40:27'
+  request:
+    body:
+      encoding: utf-8
+      string: '{"text": "This is a sample warning message", "alert_type": "warning",
+        "title": "This is a sample warning message"}'
+    headers:
+      Accept: '*/*'
+      Accept-Encoding: gzip, deflate
+      Connection: keep-alive
+      Content-Length: '114'
+      Content-Type: application/json
+      User-Agent: datadog-logging/0.0.1 python-requests/2.13.0 CPython/2.7.13
+    method: POST
+    uri: https://app.datadoghq.com/api/v1/events?api_key=<DATADOG_API_KEY>
+  response:
+    body:
+      encoding: utf-8
+      string: '{"status":"ok","event":{"id":941343391421728099,"title":"This is a
+        sample warning message","text":"This is a sample warning message","date_happened":1487223627,"handle":null,"priority":null,"related_event_id":null,"tags":null,"url":"https://app.datadoghq.com/event/event?id=941343391421728099"}}'
+    headers:
+      Connection: keep-alive
+      Content-Length: '295'
+      Content-Type: text/plain; charset=utf-8
+      DD-POOL: propjoe
+      Date: Thu, 16 Feb 2017 05:40:27 GMT
+      Strict-Transport-Security: max-age=15724800;
+      X-Content-Type-Options: nosniff
+    status:
+      code: 202
+      message: Accepted
+    url: https://app.datadoghq.com/api/v1/events?api_key=<DATADOG_API_KEY>
+recorded_with: betamax/0.8.0

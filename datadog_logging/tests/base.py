@@ -10,9 +10,18 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+import logging
+
 import testtools
+
+import datadog_logging
 
 
 class TestCase(testtools.TestCase):
 
-    """Test case base class for all unit tests."""
+    def getLogger(self, name, **kwargs):
+        logger = logging.getLogger(name)
+        logger.propagate = kwargs.pop('propagate', False)
+        logger.setLevel(kwargs.pop('level', logging.WARNING))
+        logger.addHandler(datadog_logging.DatadogLogHandler(**kwargs))
+        return logger
