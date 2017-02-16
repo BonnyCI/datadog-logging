@@ -17,7 +17,7 @@ import platform
 import requests
 
 from datadog_logging import version as _version
-from datadog_logging import common
+from datadog_logging import base
 
 
 __all__ = (
@@ -40,7 +40,7 @@ def _create_session(*args, **kwargs):
     return requests.Session(*args, **kwargs)
 
 
-class DatadogLogRequestHandler(logging.Handler):
+class DatadogLogRequestHandler(base.DatadogLogBaseHandler):
 
     LOG = logging.getLogger(__name__)
 
@@ -50,14 +50,10 @@ class DatadogLogRequestHandler(logging.Handler):
                  api_key=None,
                  app_key=None,
                  datadog_host=None,
-                 session=None,
                  **kwargs):
         super(DatadogLogRequestHandler, self).__init__(**kwargs)
 
         self.session = _create_session()
-
-        self.tags = tags
-        self.mentions = mentions
 
         self.api_key = api_key or os.environ.get('DATADOG_API_KEY')
         self.app_key = app_key or os.environ.get('DATADOG_APP_KEY')
@@ -76,22 +72,18 @@ class DatadogLogRequestHandler(logging.Handler):
 
             return
 
-        text = self.format(record)
+        return super(DatadogLogRequestHandler, self).emit(record)
 
-        if self.mentions is not None:
-            text = "\n\n".join([text, " ".join(self.mentions)])
-
-        data = {
-            "title": record.getMessage(),
-            "text": text
-        }
-
-        if self.tags is not None:
-            data["tags"] = self.tags
-
-        if record.levelno in common.LOG_LEVEL_ALERT_MAP:
-            data["alert_type"] = common.LOG_LEVEL_ALERT_MAP[record.levelno]
-
+    def send_event(self,
+                   title,
+                   text,
+                   alert_type=None,
+                   aggregation_key=None,
+                   source_type_name=None,
+                   date_happened=None,
+                   priority=None,
+                   tags=None,
+                   hostname=None):
         params = {'api_key': self.api_key}
 
         if self.app_key:
@@ -99,6 +91,26 @@ class DatadogLogRequestHandler(logging.Handler):
 
         headers = {'Content-Type': 'application/json',
                    'User-Agent': USER_AGENT}
+
+        data = {
+            'title': title,
+            'text': text,
+        }
+
+        if alert_type is not None:
+            data['alert_type'] = alert_type
+        if aggregation_key is not None:
+            data['aggregation_key'] = aggregation_key
+        if source_type_name is not None:
+            data['source_type_name'] = source_type_name
+        if date_happened is not None:
+            data['date_happened'] = date_happened
+        if priority is not None:
+            data['priority'] = priority
+        if tags is not None:
+            data['tags'] = tags
+        if hostname is not None:
+            data['host'] = hostname  # yep, different
 
         resp = self.session.post(self.event_api,
                                  headers=headers,

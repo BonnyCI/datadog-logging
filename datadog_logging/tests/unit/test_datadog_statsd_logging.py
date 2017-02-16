@@ -10,13 +10,24 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+
 import logging
+import uuid
+
+from datadog_logging.tests.unit import base
 
 
-LOG_LEVEL_ALERT_MAP = {
-    logging.DEBUG: "info",
-    logging.INFO: "info",
-    logging.WARNING: "warning",
-    logging.ERROR: "error",
-    logging.CRITICAL: "error"
-}
+class SimpleGoodLogs(base.StatsdTestCase):
+
+    def test_simple_logging_levels(self):
+        logger = self.getStatsdLogger(level=logging.WARNING)
+
+        logger.debug('This should not be passed')
+        self.assertFalse(self.called)
+
+        logger.warning('This should be passed')
+        self.assertTrue(self.called_once)
+
+        self.assertElement('text', 'This should be passed')
+        self.assertElement('title', 'This should be passed')
+        self.assertElement('alert_type', 'warning')

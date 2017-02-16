@@ -13,9 +13,11 @@
 from datadog_logging import version as _version
 
 from datadog_logging.request_handler import *
+from datadog_logging.statsd_handler import *
 
 
 __all__ = [
     'DATADOG_HOST',
     'DatadogLogRequestHandler',
+    'DatadogLogStatsdHandler',
 ]

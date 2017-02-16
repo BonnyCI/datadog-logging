@@ -19,9 +19,19 @@ import datadog_logging
 
 class TestCase(testtools.TestCase):
 
-    def getLogger(self, name, **kwargs):
+    def getTestLogger(self, klass, name, **kwargs):
         logger = logging.getLogger(name)
         logger.propagate = kwargs.pop('propagate', False)
         logger.setLevel(kwargs.pop('level', logging.WARNING))
-        logger.addHandler(datadog_logging.DatadogLogRequestHandler(**kwargs))
+        logger.addHandler(klass(**kwargs))
         return logger
+
+    def getRequestLogger(self, name, **kwargs):
+        return self.getTestLogger(datadog_logging.DatadogLogRequestHandler,
+                                  name,
+                                  **kwargs)
+
+    def getStatsdLogger(self, name, **kwargs):
+        return self.getTestLogger(datadog_logging.DatadogLogStatsdHandler,
+                                  name,
+                                  **kwargs)

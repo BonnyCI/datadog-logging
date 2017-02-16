@@ -16,14 +16,14 @@ import uuid
 from datadog_logging.tests.unit import base
 
 
-class SimpleGoodLogs(base.TestCase):
+class SimpleGoodLogs(base.RequestTestCase):
 
     def setUp(self):
         super(SimpleGoodLogs, self).setUp()
         self.good_mock()
 
     def test_simple_logging_levels(self):
-        logger = self.getLogger(level=logging.WARNING)
+        logger = self.getRequestLogger(level=logging.WARNING)
 
         logger.debug('This should not be passed')
         self.assertFalse(self.requests_mock.called)
@@ -47,7 +47,7 @@ class SimpleGoodLogs(base.TestCase):
 
         self.set_env('DATADOG_API_KEY', api_key)
 
-        logger = self.getLogger(level=logging.WARNING)
+        logger = self.getRequestLogger(level=logging.WARNING)
         logger.warn('ABC')
 
         self.assertApiKey(api_key)
@@ -57,11 +57,7 @@ class SimpleGoodLogs(base.TestCase):
 
         self.set_env('DATADOG_APP_KEY', app_key)
 
-        logger = self.getLogger(level=logging.WARNING)
+        logger = self.getRequestLogger(level=logging.WARNING)
         logger.warn('ABC')
 
         self.assertQs('app_key', app_key)
-
-
-class TestDatadogLogging(base.TestCase):
-    pass

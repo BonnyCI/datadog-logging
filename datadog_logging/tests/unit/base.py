@@ -10,6 +10,7 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+import collections
 import logging
 import time
 import uuid
@@ -21,19 +22,20 @@ import datadog_logging
 from datadog_logging.tests import base
 
 
-class TestCase(base.TestCase):
+class RequestTestCase(base.TestCase):
 
     EVENT_URL_TMPL = 'https://app.datadoghq.com/event/jump_to?event_id=%s'
 
     def setUp(self):
-        super(TestCase, self).setUp()
+        super(RequestTestCase, self).setUp()
 
         self.api_key = uuid.uuid4().hex
         self.requests_mock = self.useFixture(requests_mock_fixture.Fixture())
 
-    def getLogger(self, **kwargs):
+    def getRequestLogger(self, **kwargs):
         kwargs.setdefault('api_key', self.api_key)
-        return super(TestCase, self).getLogger(uuid.uuid4().hex, **kwargs)
+        return super(RequestTestCase, self).getRequestLogger(uuid.uuid4().hex,
+                                                             **kwargs)
 
     def mock(self, **kwargs):
         datadog_host = kwargs.pop('datadog_host', datadog_logging.DATADOG_HOST)
@@ -80,8 +82,51 @@ class TestCase(base.TestCase):
 
         self.assertQs('api_key', api_key, request=request)
 
-    def assertElement(self, key, val, request=None):
-        if not request:
-            request = self.requests_mock.last_request
+    def assertElement(self, key, val, element=None):
+        if not element:
+            element = self.requests_mock.last_request
 
-        self.assertEqual(val, request.json().get(key))
+        self.assertEqual(val, element.json().get(key))
+
+
+class _FakeStatsd(object):
+
+    def __init__(self):
+        self.history = []
+
+    def event(self, title, text, **kwargs):
+        kwargs['title'] = title
+        kwargs['text'] = text
+        self.history.append(kwargs)
+
+
+class StatsdTestCase(base.TestCase):
+
+    def setUp(self):
+        super(StatsdTestCase, self).setUp()
+
+        self.fake_statsd = _FakeStatsd()
+
+        m = 'datadog_logging.statsd_handler._create_statsd'
+        self.useFixture(fixtures.MockPatch(m, self.create_statsd))
+
+    def getStatsdLogger(self, **kwargs):
+        return super(StatsdTestCase, self).getStatsdLogger(uuid.uuid4().hex,
+                                                           **kwargs)
+
+    @property
+    def called_once(self):
+        return len(self.fake_statsd.history) == 1
+
+    @property
+    def called(self):
+        return len(self.fake_statsd.history) > 0
+
+    def create_statsd(self, *args, **kwargs):
+        return self.fake_statsd
+
+    def assertElement(self, key, val, event=None):
+        if not event:
+            event = self.fake_statsd.history[-1]
+
+        self.assertEqual(val, event.get(key))
