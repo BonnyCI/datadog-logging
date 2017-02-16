@@ -30,9 +30,14 @@ class DatadogLogStatsdHandler(base.DatadogLogBaseHandler):
     LOG = logging.getLogger(__name__)
 
     def __init__(self,
-                 host='localhost',
-                 port=8125,
+                 host=None,
+                 port=None,
                  **kwargs):
+        if not host:
+            host = os.environ.get('DATADOG_HOST', 'localhost')
+        if not port:
+            port = int(os.environ.get('DATADOG_PORT', 8125))
+
         super(DatadogLogStatsdHandler, self).__init__(**kwargs)
         self.statsd = _create_statsd(host=host, port=port)
 
