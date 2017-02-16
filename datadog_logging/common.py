@@ -10,12 +10,13 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-from datadog_logging import version as _version
-
-from datadog_logging.request_handler import *
+import logging
 
 
-__all__ = [
-    'DATADOG_HOST',
-    'DatadogLogRequestHandler',
-]
+LOG_LEVEL_ALERT_MAP = {
+    logging.DEBUG: "info",
+    logging.INFO: "info",
+    logging.WARNING: "warning",
+    logging.ERROR: "error",
+    logging.CRITICAL: "error"
+}

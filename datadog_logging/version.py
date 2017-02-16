@@ -10,12 +10,6 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-from datadog_logging import version as _version
+import pbr.version
 
-from datadog_logging.request_handler import *
-
-
-__all__ = [
-    'DATADOG_HOST',
-    'DatadogLogRequestHandler',
-]
+version_string = pbr.version.VersionInfo('datadog_logging').version_string()

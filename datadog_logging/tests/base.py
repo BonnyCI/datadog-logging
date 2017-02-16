@@ -23,5 +23,5 @@ class TestCase(testtools.TestCase):
         logger = logging.getLogger(name)
         logger.propagate = kwargs.pop('propagate', False)
         logger.setLevel(kwargs.pop('level', logging.WARNING))
-        logger.addHandler(datadog_logging.DatadogLogHandler(**kwargs))
+        logger.addHandler(datadog_logging.DatadogLogRequestHandler(**kwargs))
         return logger

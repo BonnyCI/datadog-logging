@@ -52,8 +52,8 @@ class TestCase(base.TestCase):
         self.addCleanup(r.stop)
         r.start()
 
-        self.useFixture(fixtures.MockPatch('datadog_logging._create_session',
-                                           self.create_session))
+        m = 'datadog_logging.request_handler._create_session'
+        self.useFixture(fixtures.MockPatch(m, self.create_session))
 
     def create_session(self, *args, **kwargs):
         return self.session
