@@ -11,6 +11,7 @@
 # under the License.
 
 import logging
+import os
 
 from datadog.dogstatsd import DogStatsd
 
